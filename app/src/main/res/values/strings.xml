@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">GeoQuiz</string>
+
+    <!--Questions-->
+    <string name="firstQuestion">The capital of KSA is hail?</string>
+    <string name="secondQuestion">KSA is in africa?</string>
+    <string name="thirdQuestion">Your name is Mohammed?</string>
+    <string name="fourthQuestion">Peanuts are not nuts?</string> <!-- True-->
+    <string name="fifthQuestion">Light travels in a straight line?</string> <!--True -->
+    <string name="sixthQuestion">The Mona Liza was stolen from the Louvre in 1911?</string> <!--True -->
+    <string name="seventhQuestion">Jeddah is on the east side of KSA?</string> <!--false -->
+    <string name="eighthQuestion">Kotlin is a programming language?</string> <!-- true-->
+    <string name="ninthQuestion">Our instructor name is Ahmed?</string> <!-- false-->
+    <string name="tenthQuestion">This is easy?</string> <!--true -->
+
+    <!--Buttons-->
+    <string name="trueButton">True</string>
+    <string name="falseButton">False</string>
+    <string name="show_answer_button">Show answer</string>
+    <string name="previousBtnDes">Previous Question Button</string>
+    <string name="nextBtnDes">Next Question Button</string>
+
+    <!--Toasts-->
+    <string name="correct_toast">Correct</string>
+    <string name="Incorrect_toast">Incorrect</string>
+
+    <!--TextViews-->
+    <string name="score">0/10</string>
+    <string name="warning_message">Are you sure you want to do this?</string>
+    <string name="cheatButton">Cheat</string>
+
+</resources>
