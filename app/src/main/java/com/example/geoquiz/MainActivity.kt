@@ -1,6 +1,9 @@
 package com.example.geoquiz
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +23,9 @@ private const val TAG = "MainActivity" //the name of this class which is best pr
 private const val KEY_INDEX = "index" //save bundle key
 const val EXTRA_IS_TRUE_OR_NOT =
     "MainActivity_Question_Answer" //good practice to write this class name first
+const val EXTRA_QUESTION_TEXT = "MainActivity_Question"
+
+private const val REQUAST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
     //Widgets "Views"
@@ -34,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     //How to make instance of ViewModel
     //Note:- "this" means this class 'MainActivity', because ViewModelProvider needs to know where he is
     //Note:- "ViewModelProvider" is the manger of "QuizViewModel"
-//        val provider = ViewModelProvider(this)
     private val quizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
     } //"QuizViewModel::class.java" to point to it
@@ -75,55 +80,36 @@ class MainActivity : AppCompatActivity() {
             quizViewModel.nextQuestion()
             updateQuestion()
         }
+
         nextButton.setOnClickListener {
             quizViewModel.nextQuestion()
             updateQuestion()
         }
+
         previousButton.setOnClickListener {
             quizViewModel.previousQuestion()
             updateQuestion()
         }
-        cheatButton.setOnClickListener {
+
+        cheatButton.setOnClickListener { view ->
             //creating an intent (this class, the destination class)
             val intent = Intent(this, CheatActivity::class.java)
+
             //sending the answer to CheatActivity
             intent.putExtra(EXTRA_IS_TRUE_OR_NOT, quizViewModel.currentQuestionAnswer)
+            intent.putExtra(EXTRA_QUESTION_TEXT, quizViewModel.currentQuestionText)
             //starting the activity
-            startActivity(intent)
+//            startActivity(intent)
+
+            //book page 117 explains it
+            val options = ActivityOptions
+                .makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+            //if we want to send result and will get result from the other class we use
+            //this fun is deprecated ckeck android luncher
+            startActivityForResult(intent, REQUAST_CODE_CHEAT, options.toBundle())
         }
 
         updateQuestion()
-    }
-
-    //LIFECYCLE
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume()")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop()")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d(TAG, "onRestart()")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause()")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy()")
     }
 
     //Save bundle
@@ -134,6 +120,20 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "a value has been saved")
         //key must be val and const
         outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+
+    }
+
+    //this fun would be called if we used setResult in the other class "CheatActivity"
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        //if the result is not OK return "exit the function"
+        if (resultCode != Activity.RESULT_OK){
+            return
+        }
+
+        if (requestCode == REQUAST_CODE_CHEAT){
+            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        }
     }
 
     private fun updateQuestion() {
@@ -153,16 +153,24 @@ class MainActivity : AppCompatActivity() {
 //        Log.d(TAG, "I'm from checkAnswer: ", IllegalStateException())
         //Or you can use breakpoint
         val correctAnswer = quizViewModel.currentQuestionAnswer
-        if (correctAnswer == userAnswer) {
-            Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()
-            quizViewModel.isCurrentQuestionAnswered = true
+        val toastMessage: Int
+
+        if (quizViewModel.isCheater){
+            toastMessage = R.string.cheaterToast
+        }else if (userAnswer == correctAnswer){
+            toastMessage = R.string.correct_toast
+            questionBeenAnswered()
             updateScore()
-            updateQuestion()
-        } else {
-            Toast.makeText(this, R.string.Incorrect_toast, Toast.LENGTH_SHORT).show()
-            quizViewModel.isCurrentQuestionAnswered = true
-            updateQuestion()
+        }else {
+            toastMessage = R.string.Incorrect_toast
+            questionBeenAnswered()
         }
+        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun questionBeenAnswered(){
+        quizViewModel.isCurrentQuestionAnswered = true
+        isQuestionAnswered()
     }
 
     private fun updateScore() {

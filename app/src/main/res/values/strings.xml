@@ -23,10 +23,12 @@
     <!--Toasts-->
     <string name="correct_toast">Correct</string>
     <string name="Incorrect_toast">Incorrect</string>
+    <string name="cheaterToast">You cheated</string>
 
     <!--TextViews-->
     <string name="score">0/10</string>
     <string name="warning_message">Are you sure you want to do this?</string>
     <string name="cheatButton">Cheat</string>
+
 
 </resources>
